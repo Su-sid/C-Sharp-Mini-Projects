@@ -1,8 +1,6 @@
 ﻿/*
- This exercise is meant to help understand about how to work with classes and its various characteristics.
- 
+ This exercise is meant to help understand about how to work with classes and its various characteristics. 
  */
-
 
 using System;
 using System.Collections.Generic;
