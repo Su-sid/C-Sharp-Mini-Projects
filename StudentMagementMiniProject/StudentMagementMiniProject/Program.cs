@@ -196,25 +196,26 @@ namespace StudentManagement
                 return $@"Special ID:{ID.ToString()}";
             }
         }
-    //5. Classes and Structs: Members
+   
     class Program
     {
         static void Main(string[] args)
         {
             StudentCollection studentCollection = new StudentCollection();
+            demoCasting castingDemo = new demoCasting();
+            bool running = true;
 
-            // Menu loop for user interaction
-            while (true)
+            while (running)
             {
-                Console.WriteLine("\nStudent Management System Menu");
-                Console.WriteLine("1. Add Student");
-                Console.WriteLine("2. Get Student List");
-                Console.WriteLine("3. Find Students by Initial");
-                Console.WriteLine("4. Get Top Students (Above 75 Grade - Placeholder)");
-                Console.WriteLine("5. Demo Casting (Student to Person)");
+                Console.WriteLine("\n--- Student Management System Menu ---");
+                Console.WriteLine("1. Add New Student");
+                Console.WriteLine("2. Print All Students");
+                Console.WriteLine("3. Query Students by First Letter");
+                Console.WriteLine("4. Get Top Students (Grade > 75)");
+                Console.WriteLine("5. Demo Casting Between Student and Person");
                 Console.WriteLine("6. Exit");
+                Console.Write("Select an option (1-6): ");
 
-                Console.Write("Enter your choice: ");
                 string choice = Console.ReadLine();
 
                 switch (choice)
@@ -223,99 +224,102 @@ namespace StudentManagement
                         AddStudent(studentCollection);
                         break;
                     case "2":
-                        GetStudentList(studentCollection);
+                        PrintAllStudents(studentCollection);
                         break;
                     case "3":
-                        FindStudentsByInitial(studentCollection);
+                        QueryStudentsByLetter(studentCollection);
                         break;
                     case "4":
-                        Console.WriteLine("Get Top Students functionality is not yet implemented (placeholder).");
+                        GetTopStudents(studentCollection);
                         break;
                     case "5":
-                        DemoCasting();
+                        castingDemo.DemoCasting();
                         break;
                     case "6":
-                        Console.WriteLine("Exiting program...");
-                        return;
+                        running = false;
+                        break;
                     default:
-                        Console.WriteLine("Invalid choice. Please try again.");
+                        Console.WriteLine("Invalid option. Please try again.");
                         break;
                 }
             }
         }
 
-        static void AddStudent(StudentCollection
- studentCollection)
+        static void AddStudent(StudentCollection studentCollection)
         {
-            Console.Write("Enter student's first name: ");
+            Console.Write("Enter Student ID: ");
+            string ID = Console.ReadLine();
+            
+            Console.Write("Enter Student First Name: ");
             string firstName = Console.ReadLine();
 
-            Console.Write("Enter student's middle name (optional): ");
+            Console.Write("Enter Student Middle Name (or press Enter to skip): ");
             string? middleName = Console.ReadLine();
+            if (string.IsNullOrEmpty(middleName)) middleName = null;
 
-            Console.Write("Enter student's last name: ");
+            Console.Write("Enter Student Last Name: ");
             string lastName = Console.ReadLine();
 
-            studentCollection.AddNewStudent("", firstName, middleName, lastName); // Replace "" with student ID generation logic
+            Console.Write("Enter Student Grade (0-100): ");
+            int grade = int.Parse(Console.ReadLine());
+
+            // Adding new student
+            Student newStudent = new Student(firstName, middleName, lastName)
+            {
+                Grade = grade
+            };
+
+            studentCollection.AddNewStudent(ID,firstName, middleName, lastName);
             Console.WriteLine("Student added successfully.");
         }
 
-        static void GetStudentList(StudentCollection studentCollection)
+        static void PrintAllStudents(StudentCollection studentCollection)
         {
             List<Student> students = studentCollection.GetStudentList();
-
             if (students.Count == 0)
             {
-                Console.WriteLine("No students found in the list.");
-                return;
+                Console.WriteLine("No students to display.");
             }
-
-            Console.WriteLine("List of Students:");
-            foreach (Student student in students)
+            else
             {
-                student.printDetails();
+                Console.WriteLine("\nList of Students:");
+                foreach (var student in students)
+                {
+                    student.printDetails();
+                }
             }
         }
 
-        static void FindStudentsByInitial(StudentCollection studentCollection)
+        static void QueryStudentsByLetter(StudentCollection studentCollection)
         {
-            Console.Write("Enter the initial to search for: ");
-            char initial = Console.ReadKey().KeyChar;
+            Console.Write("Enter the first letter to query students: ");
+            char letter = Console.ReadLine()[0];
+            var students = studentCollection.GetStudentsStartingWith(letter);
 
-            Console.WriteLine(); // New line after user input
-
-            IEnumerator<string> studentNames = studentCollection.GetStudentsStartingWith(initial);
-
-            if (studentNames == null)
-            {
-                Console.WriteLine($"No students found starting with the initial '{initial}'.");
-                return;
-            }
-
-            //Console.WriteLine($"Students starting with '{initial}':");
-            //else 
-            //{
-            //    foreach (string name in studentNames)
+            //Console.WriteLine($"\nStudents starting with '{letter}':");
+            //    foreach (var student in students)
             //    {
-            //        Console.WriteLine(name);
+            //        Console.WriteLine(student);
             //    }
-
-            //} 
         }
 
-        static void DemoCasting()
+        static void GetTopStudents(StudentCollection studentCollection)
         {
-            Student std1 = new Student("John", "", "Doe");
-            Console.WriteLine($"My name is {std1.Name} and my grade is {std1.Grade}"); // Assuming a default grade value
-
-            Person prsn1 = std1;
-            Console.WriteLine($"My name is {prsn1.Name}");
-
-            Student std1Again = (Student)prsn1;
-            std1Again.printDetails();
+            List<Student> topStudents = studentCollection.GetTopStudents();
+            if (topStudents.Count == 0)
+            {
+                Console.WriteLine("No top students (Grade > 75) found.");
+            }
+            else
+            {
+                Console.WriteLine("\nTop Students (Grade > 75):");
+                foreach (var student in topStudents)
+                {
+                    student.printDetails();
+                }
+            }
         }
     }
-
 
 }
 
